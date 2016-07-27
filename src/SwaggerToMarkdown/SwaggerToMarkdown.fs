@@ -20,8 +20,7 @@ let markdown : WebPart =
 let app =
     choose [
       markdown
-      RequestErrors.NOT_FOUND "Resource not found"
-    ]
+      RequestErrors.NOT_FOUND "Resource not found" ]
 
 [<EntryPoint>]
 let main argv =
