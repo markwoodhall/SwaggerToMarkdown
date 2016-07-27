@@ -1,0 +1,6 @@
+source https://www.nuget.org/api/v2
+framework >= net45
+
+nuget FAKE
+nuget Suave 1.0.0
+nuget FSharp.Data 2.3.2

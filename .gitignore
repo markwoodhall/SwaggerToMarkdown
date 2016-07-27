@@ -1,0 +1,7 @@
+.paket/paket.exe
+.fake/
+[Bb]uild/
+[Da]deploy/
+[Pp]ackages/
+[Bb]in/
+Debug/
