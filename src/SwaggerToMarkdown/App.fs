@@ -7,14 +7,36 @@ open Suave.Successful
 open Suave.Web
 open FSharp.Data
 
-let generateMarkdown swaggerUrl =
+type Swagger =
+    JsonProvider<"./swagger.json">
+
+let getSwagger swaggerUrl =
     match swaggerUrl with
-    | Choice1Of2 s -> sprintf "%s" s
-    | Choice2Of2 s -> "Nothing"
+    | Choice1Of2 s -> Swagger.Load (s:string) |> Some
+    | Choice2Of2 s -> None
+
+let getOverview (swagger:Swagger.Root) =
+    sprintf "#%s\n%s" swagger.Info.Title swagger.Info.Description
+
+let getPaths (paths:Swagger.Paths) =
+    paths.JsonValue.Properties()
+    |> Seq.map (fun (k, _) -> "#" + k)
+    |> Seq.reduce (fun acc elem -> acc + "\n" + elem)
+
+let getMarkdown (swagger:Swagger.Root) =
+    let overview = getOverview swagger
+    let paths = getPaths swagger.Paths
+    sprintf "%s\n%s" overview paths
 
 let markdown : WebPart =
     path "/markdown" >=> choose [
-      GET  >=> request(fun r -> OK <| generateMarkdown (r.queryParam("swaggerUrl")))
+      GET  >=> request(fun r ->
+          let swaggerUrl = r.queryParam("swaggerUrl")
+          let swagger = getSwagger swaggerUrl
+          OK <| match swagger with
+                | Some s -> getMarkdown s
+                | None -> "Could not parse swaggerUrl parameter"
+      )
       RequestErrors.NOT_FOUND "Unsupported HTTP Method, did you mean to make a GET request" ]
 
 let app =
