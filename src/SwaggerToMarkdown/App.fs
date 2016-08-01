@@ -5,6 +5,7 @@ open Suave.Filters
 open Suave.Operators
 open Suave.Successful
 open Suave.Web
+open System
 open FSharp.Data
 
 type Swagger =
@@ -47,7 +48,15 @@ let app =
 [<EntryPoint>]
 let main argv =
     printfn "%A" argv
-    startWebServer defaultConfig app
+    let portArg = Environment.GetEnvironmentVariable "PORT"
+    let port = match Int32.TryParse portArg with
+               | (true, p) -> p
+               | (false, _) -> 8083
+    printfn "Running suave using port %d" port
+    let serverConfig =
+        { defaultConfig with
+            bindings = [ HttpBinding.mkSimple HTTP "127.0.0.1" port ]}
+    startWebServer serverConfig app
     0
 
 // curl -X GET http://localhost:8083/markdown?swaggerUrl=http%3A%2F%2Fpetstore.swagger.io%2Fv2%2Fswagger.json
