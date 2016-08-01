@@ -37,7 +37,6 @@ let markdown : WebPart =
           OK <| match swagger with
                 | Some s -> getMarkdown s
                 | None -> "Could not parse swaggerUrl parameter")
-
       RequestErrors.NOT_FOUND "Unsupported HTTP Method, did you mean to make a GET request" ]
 
 let app =
